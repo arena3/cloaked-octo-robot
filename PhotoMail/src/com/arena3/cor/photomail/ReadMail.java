@@ -11,7 +11,6 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
-import android.widget.Toast;
 
 public class ReadMail extends AsyncTask<Void, Void, Void> {
     String host = "imap.gmail.com";
@@ -55,9 +54,9 @@ public class ReadMail extends AsyncTask<Void, Void, Void> {
                 if(subject.compareToIgnoreCase("COR Image") == 0)
                 {
                     Log.d("COR", "Found COR Email");
-                    //message.setFlag(Flags.Flag.DELETED, true);
                 
                     handleContent(message.getContentType(), message.getContent(), message.getSize());
+                    //message.setFlag(Flags.Flag.DELETED, true);
                 }
             }
             
@@ -115,7 +114,7 @@ public class ReadMail extends AsyncTask<Void, Void, Void> {
                     Log.d("STOR", imageFile.getAbsolutePath());
                     
                     OutputStream os = new FileOutputStream(imageFile);
-                    byte[] buffer = new byte[contentSize];
+                    byte[] buffer = new byte[1024];
                     
                     Log.d("GET", "....");
                     while((ds.read(buffer)) > 0)
@@ -139,7 +138,5 @@ public class ReadMail extends AsyncTask<Void, Void, Void> {
             }
             
         }
-        
-        
     }
 }
