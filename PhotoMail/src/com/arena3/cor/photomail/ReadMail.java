@@ -1,6 +1,7 @@
 package com.arena3.cor.photomail;
 
 import java.io.*;
+import java.text.DateFormat;
 import java.util.*;
 import javax.mail.*;
 
@@ -8,6 +9,9 @@ import com.sun.mail.util.BASE64DecoderStream;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
@@ -111,19 +115,23 @@ public class ReadMail extends AsyncTask<Void, Void, Void> {
                 Log.d("TOK", tokens[0] + "." + tokens[1] );
                 try {
                     File imageFile = File.createTempFile(tokens[0], "." + tokens[1], storageDir);
-                    Log.d("STOR", imageFile.getAbsolutePath());
+                    Date start = new Date();
+                    
+                    Log.d("STOR", imageFile.getAbsolutePath() + " " + DateFormat.getDateTimeInstance().format(start));
                     
                     OutputStream os = new FileOutputStream(imageFile);
-                    byte[] buffer = new byte[1024];
+                    byte[] buffer = new byte[4096];
                     
-                    Log.d("GET", "....");
                     while((ds.read(buffer)) > 0)
                     {
-                        Log.d("GET", ".....");
                         os.write(buffer);
                     }
                     
-                    Log.d("STOR", "complete");
+                    Log.d("STOR", "complete" + " " + (new Date().getTime() - start.getTime())/60000);
+                    
+                    MediaScannerConnection.scanFile(_context, new String[] {imageFile.getAbsolutePath()}, null, null);
+                    
+                    Log.d("SCAN", "requested" + " " + (new Date().getTime() - start.getTime())/60000);
                     
                     os.flush();
                     os.close();
