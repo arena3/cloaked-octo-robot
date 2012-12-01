@@ -3,6 +3,7 @@ package com.arena3.cor.PhotoSlide;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
+import android.content.Context;
 import android.content.CursorLoader;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -10,29 +11,28 @@ import android.graphics.BitmapFactory;
 import android.provider.MediaStore;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.graphics.Pixmap;
 
 public class GalleryUtil {
 
-	AndroidApplication _application;
+	Context appContext;
 
 	// Get the base URI for the People table in the Contacts content
 	// provider.
 
-	public GalleryUtil(AndroidApplication application) {
-		_application = application;
+	public GalleryUtil(Context appContext) {
+		this.appContext = appContext;
 	}
 
-	public void getFilePaths(BlockingOnUIRunnableContext ctx) {
+	public ArrayList<String> getFilePaths() {
 
-		ArrayList<String> outFilePaths = new ArrayList<String>();
+		ArrayList<String> filePaths = new ArrayList<String>();
 		
 		// which image properties are we querying
 		String[] projection = new String[] { MediaStore.Images.Media.DATA };
 
 		// Make the query.
-		Cursor cur = new CursorLoader(_application,
+		Cursor cur = new CursorLoader(appContext,
 				MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection, 	// Which
 																			// columns
 																			// to return
@@ -47,19 +47,17 @@ public class GalleryUtil {
 
 			do {
 				// Get the field values
-				outFilePaths.add(cur.getString(filepathColumn));
+				filePaths.add(cur.getString(filepathColumn));
 			} while (cur.moveToNext());
 		}
 
-		ctx.outData = outFilePaths;
-		
 		cur.close();
+		
+		return filePaths;
 	}
 	
-	void getImagePixmap(BlockingOnUIRunnableContext ctx)
+	Pixmap getImagePixmap(String filePath)
 	{
-		String filePath = (String)ctx.inData;
-		
 		final BitmapFactory.Options options = new BitmapFactory.Options();
 		options.inPurgeable = true;
 		options.inInputShareable = true;
@@ -76,10 +74,10 @@ public class GalleryUtil {
 		
 		byte[] byteArray = stream.toByteArray();
 		
-		ctx.outData = new Pixmap(byteArray, 0, byteArray.length); 
+		return new Pixmap(byteArray, 0, byteArray.length);
 	}
 	
-	public static int calculateInSampleSize(
+	private static int calculateInSampleSize(
             BitmapFactory.Options options, int reqWidth, int reqHeight) {
 
     	// Raw height and width of image

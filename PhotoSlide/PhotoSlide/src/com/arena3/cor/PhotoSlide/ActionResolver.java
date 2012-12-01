@@ -4,9 +4,10 @@ import java.util.ArrayList;
 
 import com.badlogic.gdx.graphics.Pixmap;
 
-public interface ArchActivity {
+public interface ActionResolver {
 
-	ArrayList<String> getImageFilePaths();
-	
+	public ArrayList<String> getFilePaths();
+
 	Pixmap getImagePixmap(String filePath);
+
 }
